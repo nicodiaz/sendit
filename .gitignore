@@ -1,0 +1,14 @@
+## generic files to ignore
+*~
+*.lock
+*.swp
+*.out
+*.bak
+
+
+#
+# Zend Studio files #
+#####################
+.settings*
+.metadata
+RemoteSystemsTempFiles/
