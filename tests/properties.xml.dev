@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Use this configuration file as a template to run the tests against any dbms.
+    Procedure:
+        1) Save a copy of this file with a name of your chosing. It doesn't matter
+           where you place it as long as you know where it is.
+           i.e. "mysqlconf.xml" (It needs the ending .xml).
+        2) Edit the file and fill in your settings (database name, type, username, etc.)
+           Just change the "value"s, not the names of the var elements.
+        3) To run the tests against the database type the following from within the
+           tests/ folder: phpunit --configuration <filename> ...
+           Example: phpunit --configuration mysqlconf.xml AllTests
+-->
+<phpunit bootstrap="./Bootstrap.php" colors="true">
+    <php>
+        <var name="DB_DSN" value="mysql:dbname=test_sendit;host=localhost" />
+        <var name="DB_USER" value="root" />
+        <var name="DB_PASSWD" value="qwe789" />
+        <var name="DB_DBNAME" value="test_sendit" />
+        <var name="TEST_EMAIL" value="test@example.com" />
+        
+        <var name="email_host" value="74.125.140.108" />
+        <var name="email_ssl" value="tls" />
+        <var name="email_port" value="587" />
+        <var name="email_username" value="user@gmail.com" />
+        <var name="email_password" value="password" />
+        <var name="email_from_email" value="user@gmail.com" />
+        <var name="email_from_name" value="My Name" />        
+    </php>
+</phpunit>

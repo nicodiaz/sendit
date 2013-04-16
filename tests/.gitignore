@@ -1,0 +1,2 @@
+# Avoid configuration with passwords
+*.xml
