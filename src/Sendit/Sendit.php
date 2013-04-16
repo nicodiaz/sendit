@@ -68,25 +68,63 @@ class Sendit
 	{
 		$conn = $this->getConnection();
 		
-		$stmt = $conn->query('SELECT * FROM emails WHERE sent = 0');
+		$stmt = $conn->query(
+		'
+			SELECT e.*, t.subject, t.body 
+			FROM emails e INNER JOIN types t ON e.typeId = t.id 
+			WHERE sent = 0
+		');
 		
 		$data = $stmt->fetch();
-		while (!empty($data))
+		while (! empty($data))
 		{
-			// TODO: Send the email
-			$result = mail($data['email'], "testeo", "mensaje de testeooooooooooooooooooo");
+			$result = $this->sendMail($data['email'], $data['subject'], $data['body']);
 			
 			// If success, update the email as sent
 			if ($result == true)
 			{
-				$conn->prepare('UPDATE emails SET sent = 1 WHERE id = :emailId')->execute(array(':emailId' => $data['id']));
-				
+				$conn->prepare('UPDATE emails SET sent = 1 WHERE id = :emailId')->execute(array(
+					':emailId' => $data['id']
+				));
 			}
 			
 			// Next value
 			$data = $stmt->fetch();
 		}
+	}
+	
+	/**
+	 * Internal funcion to construct and send the email with PHPMailer
+	 * 
+	 * Supports HTML body
+	 * 
+	 * @param string $to
+	 * @param string $subject
+	 * @param string $body
+	 * 
+	 * @return boolean
+	 */
+	protected function sendMail($to, $subject, $body)
+	{
+		$mail = new \PHPMailer();
+			
+		$mail->IsSMTP(); // telling the class to use SMTP
+		$mail->SMTPAuth = true; // enable SMTP authentication
+		$mail->SMTPSecure = $GLOBALS['email_ssl']; // sets the prefix to the servier
+		$mail->Host = $GLOBALS['email_host']; // sets the SMTP server
+		$mail->Port = $GLOBALS['email_port']; // sets the SMTP port
+		$mail->Username = $GLOBALS['email_username']; // email server username
+		$mail->Password = $GLOBALS['email_password']; // email server password
+			
+		$mail->SetFrom($GLOBALS['email_from_email'], $GLOBALS['email_from_name']);
+			
+		$mail->Subject = $subject;
+		$mail->MsgHTML($body);
+			
+		$mail->AddAddress($to);
 		
+		//
+		return (array_key_exists('mock_test_mail', $GLOBALS) && $GLOBALS['mock_test_mail'] == true)? true:$mail->Send();		
 	}
 
 	/**
