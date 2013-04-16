@@ -8,5 +8,12 @@ PHP Project to to send mails asynchronously.
 - Run as a cron job
 
 Releases
---------
+========
+
+0.9
+---
+
+- Add items to the queue (library)
+- Process queue (library)
+- Shell script to configure a cron job (process-queue.sh)
 
