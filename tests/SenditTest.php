@@ -11,7 +11,10 @@ class SenditTest extends \PHPUnit_Extensions_Database_TestCase
 	// only instantiate pdo once for test clean-up/fixture load
 	private static $pdo = null;
 	
-	// only instantiate PHPUnit_Extensions_Database_DB_IDatabaseConnection once per test
+	/**
+	 * only instantiate PHPUnit_Extensions_Database_DB_IDatabaseConnection once per test
+	 * @var PHPUnit_Extensions_Database_DB_DefaultDatabaseConnection
+	 */
 	private $conn = null;
 
 	/**
@@ -30,6 +33,7 @@ class SenditTest extends \PHPUnit_Extensions_Database_TestCase
 		
 
 		$this->Sendit = new Sendit();
+		$this->Sendit->setConnection($this->getConnection()->getConnection());
 	}
 
 	/**
@@ -64,7 +68,10 @@ class SenditTest extends \PHPUnit_Extensions_Database_TestCase
 	 */
 	public function testQueueEmail()
 	{
-		$this->Sendit->queueEmail(/* parameters */);
+		$this->assertTrue($this->Sendit->queueEmail('test@example.com'));
+		$this->assertTrue($this->Sendit->queueEmail('test@example.com', 2));
+		$this->assertTrue($this->Sendit->queueEmail('test@example.com', 5));
+		$this->assertFalse($this->Sendit->queueEmail('test@example.com', 99));
 	}
 	/* (non-PHPdoc)
 	 * @see PHPUnit_Extensions_Database_TestCase::getConnection()
@@ -78,6 +85,8 @@ class SenditTest extends \PHPUnit_Extensions_Database_TestCase
 				self::$pdo = new \PDO($GLOBALS['DB_DSN'], $GLOBALS['DB_USER'], $GLOBALS['DB_PASSWD']);
 			}
 			$this->conn = $this->createDefaultDBConnection(self::$pdo, $GLOBALS['DB_DBNAME']);
+			
+			$this->conn->getConnection()->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
 		}
 		
 		return $this->conn;
