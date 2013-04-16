@@ -18,5 +18,13 @@
         <var name="DB_PASSWD" value="qwe789" />
         <var name="DB_DBNAME" value="test_sendit" />
         <var name="TEST_EMAIL" value="test@example.com" />
+        
+        <var name="email_host" value="74.125.140.108" />
+        <var name="email_ssl" value="tls" />
+        <var name="email_port" value="587" />
+        <var name="email_username" value="user@gmail.com" />
+        <var name="email_password" value="password" />
+        <var name="email_from_email" value="user@gmail.com" />
+        <var name="email_from_name" value="My Name" />        
     </php>
 </phpunit>
