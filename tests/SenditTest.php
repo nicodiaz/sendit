@@ -68,11 +68,21 @@ class SenditTest extends \PHPUnit_Extensions_Database_TestCase
 	 */
 	public function testQueueEmail()
 	{
-		$this->assertTrue($this->Sendit->queueEmail('test@example.com'));
-		$this->assertTrue($this->Sendit->queueEmail('test@example.com', 2));
-		$this->assertTrue($this->Sendit->queueEmail('test@example.com', 5));
-		$this->assertFalse($this->Sendit->queueEmail('test@example.com', 99));
+		$this->assertTrue($this->Sendit->queueEmail($GLOBALS['TEST_EMAIL']));
+		$this->assertTrue($this->Sendit->queueEmail($GLOBALS['TEST_EMAIL'], 2));
+		$this->assertTrue($this->Sendit->queueEmail($GLOBALS['TEST_EMAIL'], 5));
+		$this->assertFalse($this->Sendit->queueEmail($GLOBALS['TEST_EMAIL'], 99));
 	}
+	
+	
+	public function testProcessQueue()
+	{
+		$this->Sendit->queueEmail($GLOBALS['TEST_EMAIL']);
+		$this->Sendit->queueEmail($GLOBALS['TEST_EMAIL'], 5);
+		
+		$this->Sendit->processQueue();
+	}
+	
 	/* (non-PHPdoc)
 	 * @see PHPUnit_Extensions_Database_TestCase::getConnection()
 	 */

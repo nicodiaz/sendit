@@ -1,3 +1,3 @@
 #!/bin/bash
 
-phpunit --configuration dbproperties.xml SenditTest.php 
+phpunit --configuration properties.xml SenditTest.php 

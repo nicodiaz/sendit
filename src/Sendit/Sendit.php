@@ -4,7 +4,8 @@ namespace Sendit;
 
 use Sendit\Exception\Connection;
 
-require_once(__DIR__ . '/../../config/config.php'); // Retrieve the $config variables
+require_once (__DIR__ . '/../../config/config.php'); // Retrieve the $config variables
+
 
 /**
  * Send It!
@@ -19,7 +20,7 @@ require_once(__DIR__ . '/../../config/config.php'); // Retrieve the $config vari
  */
 class Sendit
 {
-	
+
 	/**
 	 * array
 	 */
@@ -29,7 +30,6 @@ class Sendit
 	 * @var \PDO
 	 */
 	protected $_pdoConnection;
-	
 
 	/**
 	 * Function to create (or retrieve) the current connection to the DB
@@ -39,7 +39,6 @@ class Sendit
 	 */
 	protected function getConnection()
 	{
-		
 		if (empty($this->_pdoConnection))
 		{
 			$result = $this->initConnection();
@@ -55,20 +54,39 @@ class Sendit
 		
 		return $this->_pdoConnection;
 	}
-	
+
 	public function setConnection(\PDO $conn)
 	{
 		$this->_pdoConnection = $conn;
 	}
-	
-	
+
 	/**
 	 * Process the emails that are stored in the datasource and send them
 	 * 
-	 * TODO
 	 */
 	public function processQueue()
 	{
+		$conn = $this->getConnection();
+		
+		$stmt = $conn->query('SELECT * FROM emails WHERE sent = 0');
+		
+		$data = $stmt->fetch();
+		while (!empty($data))
+		{
+			// TODO: Send the email
+			$result = mail($data['email'], "testeo", "mensaje de testeooooooooooooooooooo");
+			
+			// If success, update the email as sent
+			if ($result == true)
+			{
+				$conn->prepare('UPDATE emails SET sent = 1 WHERE id = :emailId')->execute(array(':emailId' => $data['id']));
+				
+			}
+			
+			// Next value
+			$data = $stmt->fetch();
+		}
+		
 	}
 
 	/**
@@ -94,7 +112,10 @@ class Sendit
 		
 		$st = $conn->prepare('INSERT INTO emails (typeId, email) VALUES(:typeId, :email)');
 		
-		return $st->execute( array( ':typeId' => $type, ':email' => $email ) );		
+		return $st->execute(array(
+			':typeId' => $type, 
+			':email' => $email
+		));
 	}
 
 	/**
@@ -104,7 +125,8 @@ class Sendit
 	 */
 	protected function initConnection()
 	{
-		$dsn = 'mysql:host=' . $GLOBALS['config']['host'] . ';port=' . $GLOBALS['config']['port'] . ';dbname=' . $GLOBALS['config']['dbname'];
+		$dsn = 'mysql:host=' . $GLOBALS['config']['host'] . ';port=' . $GLOBALS['config']['port'] . ';dbname=' .
+		 $GLOBALS['config']['dbname'];
 		$username = $GLOBALS['config']['user'];
 		$password = $GLOBALS['config']['password'];
 		$options = array(
@@ -121,7 +143,7 @@ class Sendit
 		{
 			$result = $e->getMessage();
 		}
-
+		
 		return $result;
 	}
 }
