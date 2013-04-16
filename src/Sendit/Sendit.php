@@ -4,7 +4,8 @@ namespace Sendit;
 
 use Sendit\Exception\Connection;
 
-require_once(__DIR__ . '/../../config/config.php'); // Retrieve the $config variables
+require_once (__DIR__ . '/../../config/config.php'); // Retrieve the $config variables
+
 
 /**
  * Send It!
@@ -19,7 +20,7 @@ require_once(__DIR__ . '/../../config/config.php'); // Retrieve the $config vari
  */
 class Sendit
 {
-	
+
 	/**
 	 * array
 	 */
@@ -29,7 +30,6 @@ class Sendit
 	 * @var \PDO
 	 */
 	protected $_pdoConnection;
-	
 
 	/**
 	 * Function to create (or retrieve) the current connection to the DB
@@ -39,7 +39,6 @@ class Sendit
 	 */
 	protected function getConnection()
 	{
-		
 		if (empty($this->_pdoConnection))
 		{
 			$result = $this->initConnection();
@@ -55,20 +54,77 @@ class Sendit
 		
 		return $this->_pdoConnection;
 	}
-	
+
 	public function setConnection(\PDO $conn)
 	{
 		$this->_pdoConnection = $conn;
 	}
-	
-	
+
 	/**
 	 * Process the emails that are stored in the datasource and send them
 	 * 
-	 * TODO
 	 */
 	public function processQueue()
 	{
+		$conn = $this->getConnection();
+		
+		$stmt = $conn->query(
+		'
+			SELECT e.*, t.subject, t.body 
+			FROM emails e INNER JOIN types t ON e.typeId = t.id 
+			WHERE sent = 0
+		');
+		
+		$data = $stmt->fetch();
+		while (! empty($data))
+		{
+			$result = $this->sendMail($data['email'], $data['subject'], $data['body']);
+			
+			// If success, update the email as sent
+			if ($result == true)
+			{
+				$conn->prepare('UPDATE emails SET sent = 1 WHERE id = :emailId')->execute(array(
+					':emailId' => $data['id']
+				));
+			}
+			
+			// Next value
+			$data = $stmt->fetch();
+		}
+	}
+	
+	/**
+	 * Internal funcion to construct and send the email with PHPMailer
+	 * 
+	 * Supports HTML body
+	 * 
+	 * @param string $to
+	 * @param string $subject
+	 * @param string $body
+	 * 
+	 * @return boolean
+	 */
+	protected function sendMail($to, $subject, $body)
+	{
+		$mail = new \PHPMailer();
+			
+		$mail->IsSMTP(); // telling the class to use SMTP
+		$mail->SMTPAuth = true; // enable SMTP authentication
+		$mail->SMTPSecure = $GLOBALS['email_ssl']; // sets the prefix to the servier
+		$mail->Host = $GLOBALS['email_host']; // sets the SMTP server
+		$mail->Port = $GLOBALS['email_port']; // sets the SMTP port
+		$mail->Username = $GLOBALS['email_username']; // email server username
+		$mail->Password = $GLOBALS['email_password']; // email server password
+			
+		$mail->SetFrom($GLOBALS['email_from_email'], $GLOBALS['email_from_name']);
+			
+		$mail->Subject = $subject;
+		$mail->MsgHTML($body);
+			
+		$mail->AddAddress($to);
+		
+		//
+		return (array_key_exists('mock_test_mail', $GLOBALS) && $GLOBALS['mock_test_mail'] == true)? true:$mail->Send();		
 	}
 
 	/**
@@ -94,7 +150,10 @@ class Sendit
 		
 		$st = $conn->prepare('INSERT INTO emails (typeId, email) VALUES(:typeId, :email)');
 		
-		return $st->execute( array( ':typeId' => $type, ':email' => $email ) );		
+		return $st->execute(array(
+			':typeId' => $type, 
+			':email' => $email
+		));
 	}
 
 	/**
@@ -104,7 +163,8 @@ class Sendit
 	 */
 	protected function initConnection()
 	{
-		$dsn = 'mysql:host=' . $GLOBALS['config']['host'] . ';port=' . $GLOBALS['config']['port'] . ';dbname=' . $GLOBALS['config']['dbname'];
+		$dsn = 'mysql:host=' . $GLOBALS['config']['host'] . ';port=' . $GLOBALS['config']['port'] . ';dbname=' .
+		 $GLOBALS['config']['dbname'];
 		$username = $GLOBALS['config']['user'];
 		$password = $GLOBALS['config']['password'];
 		$options = array(
@@ -121,7 +181,7 @@ class Sendit
 		{
 			$result = $e->getMessage();
 		}
-
+		
 		return $result;
 	}
 }

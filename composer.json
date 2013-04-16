@@ -1,0 +1,23 @@
+{
+    "name": "nicodiaz/sendit",
+    "description": "Sendit Queue and Send mails asynchronously by a deamon",
+    "authors": [
+        {
+            "name": "Nicolás Díaz País",
+            "email": "nicodiaz@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.0"
+    },
+    "require-dev": {
+        "phpmailer/phpmailer": "*",
+        "phpunit/phpunit": "*"
+    },
+    "autoload": {
+        "psr-0": {
+            "Sendit\\": "src/"
+        }
+    },
+    "license": "LGPL-2.1"
+}
