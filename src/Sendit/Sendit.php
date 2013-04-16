@@ -22,10 +22,6 @@ class Sendit
 {
 
 	/**
-	 * array
-	 */
-	
-	/**
 	 * 
 	 * @var \PDO
 	 */
