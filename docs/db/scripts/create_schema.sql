@@ -20,6 +20,7 @@ ENGINE = InnoDB;
 CREATE  TABLE IF NOT EXISTS `emails` (
   `id` INT NOT NULL AUTO_INCREMENT ,
   `typeId` INT NOT NULL ,
+  `email` VARCHAR(455) NOT NULL ,
   `sent` TINYINT(1) NULL DEFAULT 0 ,
   PRIMARY KEY (`id`) ,
   INDEX `fk_emails_types_idx` (`typeId` ASC) ,
