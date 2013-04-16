@@ -17,3 +17,6 @@ Releases
 - Process queue (library)
 - Shell script to configure a cron job (process-queue.sh)
 
+1.0.0
+-----
+- First Stable Version
