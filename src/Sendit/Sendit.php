@@ -4,8 +4,7 @@ namespace Sendit;
 
 use Sendit\Exception\Connection;
 
-include_once '../config/config.php'; // Retrieve the $config variables
-
+require_once(__DIR__ . '/../../config/config.php'); // Retrieve the $config variables
 
 /**
  * Send It!
@@ -20,6 +19,10 @@ include_once '../config/config.php'; // Retrieve the $config variables
  */
 class Sendit
 {
+	
+	/**
+	 * array
+	 */
 	
 	/**
 	 * 
@@ -51,6 +54,11 @@ class Sendit
 		}
 		
 		return $this->_pdoConnection;
+	}
+	
+	public function setConnection(\PDO $conn)
+	{
+		$this->_pdoConnection = $conn;
 	}
 	
 	
@@ -96,18 +104,18 @@ class Sendit
 	 */
 	protected function initConnection()
 	{
-		$dsn = 'mysql:host=' . $config['host'] . ';port=' . $config['port'] . ';dbname=' . $config['dbname'];
-		$username = $config['user'];
-		$password = $config['password'];
+		$dsn = 'mysql:host=' . $GLOBALS['config']['host'] . ';port=' . $GLOBALS['config']['port'] . ';dbname=' . $GLOBALS['config']['dbname'];
+		$username = $GLOBALS['config']['user'];
+		$password = $GLOBALS['config']['password'];
 		$options = array(
 			\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
 		);
 		
-		$result = true;
+		$result = false;
 		
 		try
 		{
-			$pdo = new \PDO($dsn, $username, $password, $options);
+			$result = new \PDO($dsn, $username, $password, $options);
 		}
 		catch (\PDOException $e)
 		{
