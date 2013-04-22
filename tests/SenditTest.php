@@ -29,10 +29,23 @@ class SenditTest extends \PHPUnit_Extensions_Database_TestCase
 	{
 		parent::setUp();
 		
-		// TODO Auto-generated SenditTest::setUp()
-		
+		$config = array(
+			'host' => 'localhost', // dummy value, the test use $GLOBALS['DB_DSN'] value
+			'port' => '3325', // dummy value, the test use $GLOBALS['DB_DSN'] value
+			'user' => $GLOBALS['DB_USER'],
+			'password' => $GLOBALS['DB_PASSWD'],
+			'dbname' => $GLOBALS['DB_DBNAME'],
+			'email_host' => $GLOBALS['email_host'],
+			'email_ssl' => $GLOBALS['email_ssl'],
+			'email_port' => $GLOBALS['email_port'],
+			'email_username' => $GLOBALS['email_username'],
+			'email_password' => $GLOBALS['email_password'],
+			'email_from_email' => $GLOBALS['email_from_email'],
+			'email_from_name' => $GLOBALS['email_from_name'],
+			'mock_test_mail' => ! $GLOBALS['send_test_mail'],
+		);
 
-		$this->Sendit = new Sendit();
+		$this->Sendit = new Sendit($config);
 		$this->Sendit->setConnection($this->getConnection()->getConnection());
 	}
 
