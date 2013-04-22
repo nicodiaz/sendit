@@ -21,6 +21,63 @@ require_once (__DIR__ . '/../../config/config.php'); // Retrieve the $config var
 class Sendit
 {
 
+	private $_config;
+
+	/**
+	 * The constructor of the class receive an array containing the following indexes:
+	 * 
+	 * 'host': database the register the emails
+	 * 'port': the port of the database
+	 * 'user': the username of the database
+	 * 'password': the password of the database
+	 * 'dbname': the name of the database
+	 * 
+	 * 'email_host': the smtp (IP or host) where is the smtp server
+	 * 'email_ssl': the security of the smtp (i.e. tls)
+	 * 'email_port': the port to connect 
+	 * 'email_username': the username to log in
+	 * 'email_password': the password to login
+	 * 'email_from_email': the email that will be used in the "from" field
+	 * 'email_from_name': The name that will be used in the "from" field
+	 * 
+	 * 'mock_test_mail': If the mail must be send or not (mocked by tests)
+	 * 
+	 * @param array $config
+	 */
+	public function __construct(array $config)
+	{
+		$keys1 = array(
+			'host', 
+			'port', 
+			'user', 
+			'password', 
+			'dbname', 
+			'email_host', 
+			'email_ssl', 
+			'email_port', 
+			'email_username', 
+			'email_password', 
+			'email_from_email', 
+			'email_from_name',
+			'mock_test_mail'
+		);
+		
+		$this->_config = array_fill_keys($keys1, 'value');
+		
+		$keys2 = array_keys($config); // the user provided keys
+
+		$diff = array_merge(array_diff_key($keys1, $keys2), array_diff_key($keys2, $keys1));
+		
+		if (! empty($diff))
+		{
+			throw new \InvalidArgumentException(
+			"The config array in constructor is not complete (see the documentation of the constructor)");
+		}
+		
+		// If reach here, everything is fine
+		$this->_config = $config;
+	}
+
 	/**
 	 * 
 	 * @var \PDO
@@ -79,7 +136,8 @@ class Sendit
 			// If success, update the email as sent
 			if ($result == true)
 			{
-				$conn->prepare('UPDATE emails SET sent = 1 WHERE id = :emailId')->execute(array(
+				$conn->prepare('UPDATE emails SET sent = 1 WHERE id = :emailId')->execute(
+				array(
 					':emailId' => $data['id']
 				));
 			}
@@ -88,7 +146,7 @@ class Sendit
 			$data = $stmt->fetch();
 		}
 	}
-	
+
 	/**
 	 * Internal funcion to construct and send the email with PHPMailer
 	 * 
@@ -103,24 +161,25 @@ class Sendit
 	protected function sendMail($to, $subject, $body)
 	{
 		$mail = new \PHPMailer();
-			
+		
 		$mail->IsSMTP(); // telling the class to use SMTP
 		$mail->SMTPAuth = true; // enable SMTP authentication
-		$mail->SMTPSecure = $GLOBALS['email_ssl']; // sets the prefix to the servier
-		$mail->Host = $GLOBALS['email_host']; // sets the SMTP server
-		$mail->Port = $GLOBALS['email_port']; // sets the SMTP port
-		$mail->Username = $GLOBALS['email_username']; // email server username
-		$mail->Password = $GLOBALS['email_password']; // email server password
-			
-		$mail->SetFrom($GLOBALS['email_from_email'], $GLOBALS['email_from_name']);
-			
+		$mail->SMTPSecure = $this->_config['email_ssl']; // sets the prefix to the servier
+		$mail->Host = $this->_config['email_host']; // sets the SMTP server
+		$mail->Port = $this->_config['email_port']; // sets the SMTP port
+		$mail->Username = $this->_config['email_username']; // email server username
+		$mail->Password = $this->_config['email_password']; // email server password
+		
+
+		$mail->SetFrom($this->_config['email_from_email'], $this->_config['email_from_name']);
+		
 		$mail->Subject = $subject;
 		$mail->MsgHTML($body);
-			
+		
 		$mail->AddAddress($to);
 		
 		//
-		return (array_key_exists('mock_test_mail', $GLOBALS) && $GLOBALS['mock_test_mail'] == true)? true:$mail->Send();		
+		return (array_key_exists('mock_test_mail', $this->_config) && $this->_config['mock_test_mail'] == true)? true:$mail->Send();
 	}
 
 	/**
@@ -159,10 +218,9 @@ class Sendit
 	 */
 	protected function initConnection()
 	{
-		$dsn = 'mysql:host=' . $GLOBALS['config']['host'] . ';port=' . $GLOBALS['config']['port'] . ';dbname=' .
-		 $GLOBALS['config']['dbname'];
-		$username = $GLOBALS['config']['user'];
-		$password = $GLOBALS['config']['password'];
+		$dsn = 'mysql:host=' . $this->_config['host'] . ';port=' . $this->_config['port'] . ';dbname=' . $this->_config['dbname'];
+		$username = $this->_config['user'];
+		$password = $this->_config['password'];
 		$options = array(
 			\PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'
 		);
