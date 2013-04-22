@@ -20,3 +20,7 @@ Releases
 1.0.0
 -----
 - First Stable Version
+
+1.0.1
+-----
+- Changes in constructor to receive the configuration params
