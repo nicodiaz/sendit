@@ -24,3 +24,7 @@ Releases
 1.0.1
 -----
 - Changes in constructor to receive the configuration params
+
+1.0.2
+-----
+- The config is removed from "require_once" section of the library
