@@ -4,9 +4,6 @@ namespace Sendit;
 
 use Sendit\Exception\Connection;
 
-require_once (__DIR__ . '/../../config/config.php'); // Retrieve the $config variables
-
-
 /**
  * Send It!
  *
