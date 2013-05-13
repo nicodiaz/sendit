@@ -17,7 +17,7 @@ use Sendit\Exception\Connection;
  */
 class Sendit
 {
-
+	
 	private $_config;
 
 	/**
@@ -128,6 +128,8 @@ class Sendit
 		$data = $stmt->fetch();
 		while (! empty($data))
 		{
+			$data['body'] = $this->_replaceBodyParams($data['body'], $data['params']);
+			
 			$result = $this->sendMail($data['email'], $data['subject'], $data['body']);
 			
 			// If success, update the email as sent
@@ -142,6 +144,37 @@ class Sendit
 			// Next value
 			$data = $stmt->fetch();
 		}
+	}
+	
+	
+	/**
+	 * Function to replace in the body the params encoded. 
+	 * 
+	 * Assumed that the params are json_encoded and replace the marks in the body as __?0__, __?1__, etc.
+	 * 
+	 * @param string $body
+	 * @param string $paramsEncoded
+	 */
+	private function _replaceBodyParams($body, $paramsEncoded)
+	{
+		// Preconditions
+		if (empty($paramsEncoded))
+		{
+			return $body;
+		}
+		
+		$params = json_decode($paramsEncoded);
+		
+		if (! empty($params) && is_array($params))
+		{
+			for ($i = 0; $i < count($params); $i++) 
+			{
+				$mark = '__?' . $i . '__';
+				$body = str_replace($mark, $params[$i], $body);
+			}
+		}
+		
+		return $body;
 	}
 
 	/**
