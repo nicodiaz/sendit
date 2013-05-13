@@ -183,14 +183,19 @@ class Sendit
 	 * Add an email to the queue to be processed by the cron job
 	 * Returns true on success or false on failure.
 	 * 
-	 * This functio doesnt work in transactional way, that must be implemented
+	 * This function doesn't work in transactional way, that must be implemented
+	 * 
+	 * The params is replaced in the type text, with the placeholders '__?0__', '__?1__'
 	 * 
 	 * @param string $email
 	 * @param int $type
+	 * @param unknown_type $params
+	 * 
+	 * @throws \InvalidArgumentException
 	 * 
 	 * @return bool 
 	 */
-	public function queueEmail($email, $type = 1)
+	public function queueEmail($email, $type = 1, $params = array())
 	{
 		// Preconditions
 		if (empty($email) || empty($type) || $type <= 0)
@@ -200,11 +205,14 @@ class Sendit
 		
 		$conn = $this->getConnection();
 		
-		$st = $conn->prepare('INSERT INTO emails (typeId, email) VALUES(:typeId, :email)');
+		$params = json_encode($params);
+		
+		$st = $conn->prepare('INSERT INTO emails (typeId, email, params) VALUES(:typeId, :email, :params)');
 		
 		return $st->execute(array(
 			':typeId' => $type, 
-			':email' => $email
+			':email' => $email,
+			':params' => $params,
 		));
 	}
 

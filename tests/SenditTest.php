@@ -85,6 +85,11 @@ class SenditTest extends \PHPUnit_Extensions_Database_TestCase
 		$this->assertTrue($this->Sendit->queueEmail($GLOBALS['TEST_EMAIL'], 2));
 		$this->assertTrue($this->Sendit->queueEmail($GLOBALS['TEST_EMAIL'], 5));
 		$this->assertFalse($this->Sendit->queueEmail($GLOBALS['TEST_EMAIL'], 99));
+		
+		// Now with params
+		$this->assertTrue($this->Sendit->queueEmail($GLOBALS['TEST_EMAIL'], 5, array('param1')));
+		$this->assertTrue($this->Sendit->queueEmail($GLOBALS['TEST_EMAIL'], 5, array('param1', 23)));
+		$this->assertTrue($this->Sendit->queueEmail($GLOBALS['TEST_EMAIL'], 5, array('param1', 23, '123', array('innerParam'))));
 	}
 
 	public function testProcessQueue()
