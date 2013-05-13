@@ -9,15 +9,15 @@ use Sendit\Exception\Connection;
  *
  * @link      https://github.com/nicodiaz/sendit/ for the canonical source repository
  * @copyright Copyright (c) 2013 Nicolás Díaz País. (http://www.nicodp.com.ar)
- * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @license   http://www.gnu.org/licenses/lgpl-2.1.html
  * 
  * @author nicodiaz
  * @package Sendit
- * @version 0.01
+ * @version 1.0.3
  */
 class Sendit
 {
-
+	
 	private $_config;
 
 	/**
@@ -128,6 +128,8 @@ class Sendit
 		$data = $stmt->fetch();
 		while (! empty($data))
 		{
+			$data['body'] = $this->_replaceBodyParams($data['body'], $data['params']);
+			
 			$result = $this->sendMail($data['email'], $data['subject'], $data['body']);
 			
 			// If success, update the email as sent
@@ -142,6 +144,37 @@ class Sendit
 			// Next value
 			$data = $stmt->fetch();
 		}
+	}
+	
+	
+	/**
+	 * Function to replace in the body the params encoded. 
+	 * 
+	 * Assumed that the params are json_encoded and replace the marks in the body as __?0__, __?1__, etc.
+	 * 
+	 * @param string $body
+	 * @param string $paramsEncoded
+	 */
+	private function _replaceBodyParams($body, $paramsEncoded)
+	{
+		// Preconditions
+		if (empty($paramsEncoded))
+		{
+			return $body;
+		}
+		
+		$params = json_decode($paramsEncoded);
+		
+		if (! empty($params) && is_array($params))
+		{
+			for ($i = 0; $i < count($params); $i++) 
+			{
+				$mark = '__?' . $i . '__';
+				$body = str_replace($mark, $params[$i], $body);
+			}
+		}
+		
+		return $body;
 	}
 
 	/**
@@ -183,14 +216,19 @@ class Sendit
 	 * Add an email to the queue to be processed by the cron job
 	 * Returns true on success or false on failure.
 	 * 
-	 * This functio doesnt work in transactional way, that must be implemented
+	 * This function doesn't work in transactional way, that must be implemented
+	 * 
+	 * The params is replaced in the type text, with the placeholders '__?0__', '__?1__'
 	 * 
 	 * @param string $email
 	 * @param int $type
+	 * @param unknown_type $params
+	 * 
+	 * @throws \InvalidArgumentException
 	 * 
 	 * @return bool 
 	 */
-	public function queueEmail($email, $type = 1)
+	public function queueEmail($email, $type = 1, $params = array())
 	{
 		// Preconditions
 		if (empty($email) || empty($type) || $type <= 0)
@@ -200,11 +238,14 @@ class Sendit
 		
 		$conn = $this->getConnection();
 		
-		$st = $conn->prepare('INSERT INTO emails (typeId, email) VALUES(:typeId, :email)');
+		$params = json_encode($params);
+		
+		$st = $conn->prepare('INSERT INTO emails (typeId, email, params) VALUES(:typeId, :email, :params)');
 		
 		return $st->execute(array(
 			':typeId' => $type, 
-			':email' => $email
+			':email' => $email,
+			':params' => $params,
 		));
 	}
 

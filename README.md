@@ -28,3 +28,7 @@ Releases
 1.0.2
 -----
 - The config is removed from "require_once" section of the library
+
+1.0.3
+-----
+- Add the posibility of send mails with params using plainholders in the body of email types
