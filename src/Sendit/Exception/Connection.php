@@ -12,7 +12,7 @@ namespace Sendit\Exception;
  * 
  * @author nicodiaz
  * @package Sendit
- * @version 1.0.3
+ * @version 1.0.4
  */
 class Connection extends \Exception
 {
