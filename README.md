@@ -32,3 +32,7 @@ Releases
 1.0.3
 -----
 - Add the posibility of send mails with params using plainholders in the body of email types
+
+1.0.4
+-----
+- The php executable to process the queue now updated to the new constructor
