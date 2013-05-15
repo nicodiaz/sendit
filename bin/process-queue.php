@@ -7,13 +7,7 @@ require_once (__DIR__ . '/../config/config.php'); // Retrieve the $config variab
 
 use Sendit\Sendit;
 
-
-foreach ($GLOBALS['config'] as $key => $value) 
-{
-	$GLOBALS[$key] = $value;
-}
-
-$sendit = new Sendit();
+$sendit = new Sendit($GLOBALS['config']);
 
 $sendit->processQueue();
 
