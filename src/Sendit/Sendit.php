@@ -13,7 +13,7 @@ use Sendit\Exception\Connection;
  * 
  * @author nicodiaz
  * @package Sendit
- * @version 1.0.4
+ * @version 1.0.5
  */
 class Sendit
 {
@@ -203,7 +203,7 @@ class Sendit
 
 		$mail->SetFrom($this->_config['email_from_email'], $this->_config['email_from_name']);
 		
-		$mail->Subject = $subject;
+		$mail->Subject = utf8_decode($subject); // Patch for UTF8 strings
 		$mail->MsgHTML($body);
 		
 		$mail->AddAddress($to);
