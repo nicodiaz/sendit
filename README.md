@@ -38,4 +38,5 @@ Releases
 - The php executable to process the queue now updated to the new constructor
 
 1.0.5
+-----
 - The subject is now utf8 decoded
