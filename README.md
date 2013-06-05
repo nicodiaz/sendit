@@ -40,3 +40,7 @@ Releases
 1.0.5
 -----
 - The subject is now utf8 decoded
+
+1.1.0
+-----
+- The service and daemon files are included
