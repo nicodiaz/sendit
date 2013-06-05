@@ -1,0 +1,19 @@
+description "Sendit! Server"
+author      "Nicolás Díaz País - http://www.nicodp.com.ar"
+
+# used to be: start on startup
+# Wait until all the mounts are executed and stop at shutdown
+start on started mountall
+stop on shutdown
+
+# Automatically Respawn:
+respawn
+respawn limit 99 5
+
+script
+    # Not sure why $HOME is needed, but we found that it is:
+    export HOME="/root"
+
+    exec /where/sendit/bin/senditd >> /var/log/sendit.log 2>&1
+end script
+
