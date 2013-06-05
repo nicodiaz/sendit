@@ -1,0 +1,12 @@
+[Unit]
+Description=Sendit! Server
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/where/sendit/bin/senditd
+
+[Install]
+WantedBy=multi-user.target
+
+
