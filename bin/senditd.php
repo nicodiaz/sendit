@@ -10,7 +10,7 @@
  *
  * @author nicodiaz
  * @package Sendit
- * @version 1.0.5
+ * @version 1.1.0
  */
 (@include_once __DIR__ . '/../vendor/autoload.php') || @include_once __DIR__ . '/../../../autoload.php';
 
