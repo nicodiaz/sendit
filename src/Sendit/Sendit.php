@@ -228,7 +228,7 @@ class Sendit
 	 * 
 	 * @return bool 
 	 */
-	public function queueEmail($email, $type = 1, $params = array())
+	public function enqueueEmail($email, $type = 1, $params = array())
 	{
 		// Preconditions
 		if (empty($email) || empty($type) || $type <= 0)
