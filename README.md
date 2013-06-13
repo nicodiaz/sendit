@@ -44,3 +44,8 @@ Releases
 1.1.0
 -----
 - The service and daemon files are included
+
+1.1.1
+-----
+- The add email method change to enqueueEmail
+- The params db datatype changed to TEXT
