@@ -13,10 +13,13 @@ use Sendit\Exception\Connection;
  * 
  * @author nicodiaz
  * @package Sendit
- * @version 1.1.1
+ * @version 1.1.2
  */
 class Sendit
 {
+	
+	const CHARSET_TYPE = 'UTF-8';
+	
 	
 	private $_config;
 
@@ -199,11 +202,12 @@ class Sendit
 		$mail->Port = $this->_config['email_port']; // sets the SMTP port
 		$mail->Username = $this->_config['email_username']; // email server username
 		$mail->Password = $this->_config['email_password']; // email server password
+		$mail->CharSet = self::CHARSET_TYPE;
 		
 
 		$mail->SetFrom($this->_config['email_from_email'], $this->_config['email_from_name']);
 		
-		$mail->Subject = utf8_decode($subject); // Patch for UTF8 strings
+		$mail->Subject = $subject; // Patch for UTF8 strings
 		$mail->MsgHTML($body);
 		
 		$mail->AddAddress($to);
