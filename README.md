@@ -49,3 +49,7 @@ Releases
 -----
 - The add email method change to enqueueEmail
 - The params db datatype changed to TEXT
+
+1.1.2
+-----
+- Set the default charset type to UTF-8

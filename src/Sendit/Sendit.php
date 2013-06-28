@@ -13,7 +13,7 @@ use Sendit\Exception\Connection;
  * 
  * @author nicodiaz
  * @package Sendit
- * @version 1.1.1
+ * @version 1.1.2
  */
 class Sendit
 {
